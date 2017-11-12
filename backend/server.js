@@ -3,10 +3,9 @@ var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
-var database;
-var Message = mongoose.model('Message', {
-  msg: String
-});
+// import message.js model
+var auth = require('./controllers/auth');
+var message = require('./controllers/message');
 
 // allow to use jsons
 app.use(bodyParser.json());
@@ -18,29 +17,11 @@ app.use(function(req, res, next){
   next();
  });
 
-app.get('/api/message', GetMessages);
+app.get('/api/message', message.get);
 
-// use the database instance/reference to insert req.body which is the $http request from frontend
-app.post('/api/message', function(req, res){
-  console.log(req.body);
-  var message = new Message(req.body);
+app.post('/api/message', message.post);
 
-  message.save();
-
-  res.status(200);
-});
-
-app.post('/auth/register', function(req, res){
-  console.log(req.body);
-})
-
-// get messages
-function GetMessages(req, res) {
-  // get all messages '({})'
-  Message.find({}).exec(function(err, result){
-    res.send(result);
-  })
-};
+app.post('/auth/register', auth.register)
 
 // connect to mongo
 mongoose.connect('mongodb://localhost:27017/test', function(err, db){
