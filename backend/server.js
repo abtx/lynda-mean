@@ -18,6 +18,7 @@ app.use(function(req, res, next){
   next();
  });
 
+app.get('/api/message', GetMessages);
 
 // use the database instance/reference to insert req.body which is the $http request from frontend
 app.post('/api/message', function(req, res){
@@ -29,12 +30,18 @@ app.post('/api/message', function(req, res){
   res.status(200);
 });
 
-// connect to mongo and create database instance/reference
+// get messages
+function GetMessages(req, res) {
+  // get all messages '({})'
+  Message.find({}).exec(function(err, result){
+    res.send(result);
+  })
+};
+
+// connect to mongo
 mongoose.connect('mongodb://localhost:27017/test', function(err, db){
   if(!err){
     console.log('we are connected to mongo');
-    database = db;
-
   }
 });
 
